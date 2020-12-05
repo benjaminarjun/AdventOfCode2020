@@ -1,7 +1,16 @@
 from ..aoc_util import get_data
 
 
-def _get_dim(sub_instruction, val_map):
+LENGTH_CHAR_MAPPING = {'F': 0, 'B': 1}
+WIDTH_CHAR_MAPPING = {'L': 0, 'R': 1}
+
+
+def _get_plane_dims(boarding_pass):
+    sep_ix = min([i for i, z in enumerate(boarding_pass) if z not in LENGTH_CHAR_MAPPING.keys()])
+    return sep_ix, len(boarding_pass) - sep_ix
+
+
+def _get_dim_pos(sub_instruction, val_map):
     initial_size = 2 ** len(sub_instruction)
     current_pos = 0
     next_partition_size = initial_size // 2
@@ -15,22 +24,19 @@ def _get_dim(sub_instruction, val_map):
     return current_pos
 
 
-def get_seat(instruction):
-    length_char_mapping = {'F': 0, 'B': 1}
-    width_char_mapping = {'L': 0, 'R': 1}
-
+def get_seat(boarding_pass):
     # get dimensions of plane as implied by instruction
-    sep_ix = min([i for i, z in enumerate(instruction) if z not in length_char_mapping.keys()])
-    length_instr, width_instr = instruction[:sep_ix], instruction[sep_ix:]
+    dims = _get_plane_dims(boarding_pass)
+    length_instr, width_instr = boarding_pass[:dims[0]], boarding_pass[dims[0]:]
 
     # ensure each substring of the instruction is valid
     # need only check width because the above logic already took the largest valid length sub-instruction
-    if any([z not in width_char_mapping.keys() for z in width_instr]):
+    if any([z not in WIDTH_CHAR_MAPPING.keys() for z in width_instr]):
         raise ValueError('Invalid `instruction` supplied')
 
     # perform partitioning on each dimension
-    length_pos = _get_dim(length_instr, length_char_mapping)
-    width_pos = _get_dim(width_instr, width_char_mapping)
+    length_pos = _get_dim_pos(length_instr, LENGTH_CHAR_MAPPING)
+    width_pos = _get_dim_pos(width_instr, WIDTH_CHAR_MAPPING)
 
     return length_pos, width_pos
 
