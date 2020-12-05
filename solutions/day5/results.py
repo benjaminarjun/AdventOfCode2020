@@ -4,13 +4,13 @@ from ..aoc_util import get_data
 def _get_dim(sub_instruction, val_map):
     initial_size = 2 ** len(sub_instruction)
     current_pos = 0
-    next_partition_size = initial_size / 2
+    next_partition_size = initial_size // 2
 
     for char in sub_instruction:
         if val_map[char] == 1:
             current_pos += next_partition_size
 
-        next_partition_size = next_partition_size / 2
+        next_partition_size = next_partition_size // 2
 
     return current_pos
 
