@@ -40,6 +40,9 @@ def get_seat_id(seat):
 
 
 if __name__ == '__main__':
-    print(f'Part 1:  NOT IMPLEMENTED')
+    boarding_passes = get_data(5, entry_trans=str)
+    max_seat_id = max([get_seat_id(get_seat(bp)) for bp in boarding_passes])
+
+    print(f'Part 1:  {max_seat_id}')
 
     print(f'Part 2:  NOT IMPLEMENTED')
