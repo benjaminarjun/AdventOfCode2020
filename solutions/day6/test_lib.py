@@ -1,9 +1,10 @@
 import unittest
-from .results import get_answers_per_group
+from .results import get_group_answer_unions, get_group_answer_intersections
 
 
 class TestCustomsFormReader(unittest.TestCase):
-    def test_get_answers_per_group(self):
+    @property
+    def data(self):
         document = """abc
 
 a
@@ -20,8 +21,9 @@ a
 
 b"""
 
-        lines = [z.strip() for z in document.split('\n')]
+        return [z.strip() for z in document.split('\n')]
 
+    def test_get_group_answer_unions(self):
         expected = [
             set(['a', 'b', 'c']),
             set(['a', 'b', 'c']),
@@ -30,4 +32,15 @@ b"""
             set(['b']),
         ]
 
-        self.assertEqual(expected, get_answers_per_group(lines))
+        self.assertEqual(expected, get_group_answer_unions(self.data))
+
+    def test_get_group_answer_intersections(self):
+        expected = [
+            set(['a', 'b', 'c']),
+            set([]),
+            set(['a']),
+            set(['a']),
+            set(['b']),
+        ]
+
+        self.assertEqual(expected, get_group_answer_intersections(self.data))
