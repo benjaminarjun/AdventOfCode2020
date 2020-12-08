@@ -43,9 +43,21 @@ def get_valid_supercontainers(color, bag_container_reqs):
     return set(traversed_nodes)
 
 
+def get_num_bags_inside(color, bag_container_reqs):
+    num_bags = 0
+
+    if bag_container_reqs[color] == []:
+        return 0
+
+    for bag in bag_container_reqs[color]:
+        num_bags += bag[0] * (get_num_bags_inside(bag[1], bag_container_reqs) + 1)
+
+    return num_bags
+
+
 if __name__ == '__main__':
     data = get_data(7, entry_trans=str)
     bag_container_reqs = parse_bag_container_requirements(data)
     print(f'Part 1:  {len(get_valid_supercontainers("shiny gold", bag_container_reqs))}')
 
-    print(f'Part 2:  NOT IMPLEMENTED')
+    print(f'Part 2:  {get_num_bags_inside("shiny gold", bag_container_reqs)}')

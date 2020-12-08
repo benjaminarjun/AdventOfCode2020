@@ -1,5 +1,6 @@
 import unittest
-from .results import parse_bag_container_requirements, get_valid_supercontainers
+from .results import parse_bag_container_requirements, get_valid_supercontainers, \
+    get_num_bags_inside
 
 
 class TestBagColorRules(unittest.TestCase):
@@ -38,3 +39,17 @@ class TestBagColorRules(unittest.TestCase):
         actual = get_valid_supercontainers('shiny gold', bag_container_reqs)
 
         self.assertEqual(expected, actual)
+
+    def test_get_num_bags_inside(self):
+        reqs_list = [
+            'shiny gold bags contain 2 dark red bags.',
+            'dark red bags contain 2 dark orange bags.',
+            'dark orange bags contain 2 dark yellow bags.',
+            'dark yellow bags contain 2 dark green bags.',
+            'dark green bags contain 2 dark blue bags.',
+            'dark blue bags contain 2 dark violet bags.',
+            'dark violet bags contain no other bags.',
+        ]
+
+        reqs = parse_bag_container_requirements(reqs_list)
+        self.assertEqual(126, get_num_bags_inside('shiny gold', reqs))
