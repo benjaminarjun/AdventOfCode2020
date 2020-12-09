@@ -1,5 +1,5 @@
 import unittest
-from .results import BootCodeComputer
+from .results import BootCodeComputer, ComputerState
 
 
 class TestBootCodeComputer(unittest.TestCase):
@@ -17,7 +17,10 @@ class TestBootCodeComputer(unittest.TestCase):
         ]
 
         computer = BootCodeComputer(instruction_strs)
+        self.assertEqual(ComputerState.New, computer.state)
+
         computer.run_until_repeat()
+        self.assertEqual(ComputerState.Paused, computer.state)
 
         expected = 5
         actual = computer.accumulator
