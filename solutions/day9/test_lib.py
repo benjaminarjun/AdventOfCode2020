@@ -3,8 +3,9 @@ from .results import XmasCypher
 
 
 class TestXmasCypher(unittest.TestCase):
-    def test_detect_invalid_numbers(self):
-        data = [
+    @property
+    def data(self):
+        return [
             35,
             20,
             15,
@@ -27,9 +28,17 @@ class TestXmasCypher(unittest.TestCase):
             576,
         ]
 
-        cypher = XmasCypher(data, preamble_len=5)
+    def test_detect_invalid_numbers(self):
+        cypher = XmasCypher(self.data, preamble_len=5)
         while cypher.index < len(cypher.data):
             if cypher.current_val == 127:
                 self.assertFalse(cypher.check_next())
             else:
                 self.assertTrue(cypher.check_next())
+
+    def test_find_contiguous_sublist_summing_to(self):
+        cypher = XmasCypher(self.data, preamble_len=5)
+        expected = [15, 25, 47, 40]
+        actual = cypher.find_contiguous_sublist_summing_to(127)
+
+        self.assertEqual(expected, actual)

@@ -24,6 +24,15 @@ class XmasCypher:
         self.index += 1
 
         return is_valid
+
+    def find_contiguous_sublist_summing_to(self, num):
+        for i in range(len(self.data) - 1):
+            for j in range(i + 1, len(self.data)):
+                this_sublist = self.data[i:j]
+                if sum(this_sublist) == num:
+                    return this_sublist
+
+        return None
         
 
 if __name__ == '__main__':
@@ -38,4 +47,6 @@ if __name__ == '__main__':
 
     print(f'Part 1:  {first_invalid}')
 
-    print(f'Part 2:  NOT IMPLEMENTED')
+    contiguous_sublist = cypher.find_contiguous_sublist_summing_to(first_invalid)
+
+    print(f'Part 2:  {min(contiguous_sublist) + max(contiguous_sublist)}')
