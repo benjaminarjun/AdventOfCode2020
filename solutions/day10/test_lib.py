@@ -1,5 +1,5 @@
 import unittest
-from .results import get_joltage_diff_dist
+from .results import get_joltage_diff_dist, get_num_arrangements
 
 
 class TestAdapterLinkingFinder(unittest.TestCase):
@@ -57,14 +57,20 @@ class TestAdapterLinkingFinder(unittest.TestCase):
 
     def test_joltage_linking_ex_1(self):
         adapter_ratings = self.data_ex_1
-
         expected = {1: 7, 2: 0, 3: 5}
 
         self.assertEqual(expected, get_joltage_diff_dist(adapter_ratings))
 
     def test_joltage_linking_ex_2(self):
         adapter_ratings = self.data_ex_2
-
         expected = {1: 22, 2: 0, 3: 10}
 
         self.assertEqual(expected, get_joltage_diff_dist(adapter_ratings))
+
+    def test_get_num_arrangements_ex_1(self):
+        adapter_ratings = self.data_ex_1
+        self.assertEqual(8, get_num_arrangements(adapter_ratings))
+
+    def test_get_num_arrangements_ex_2(self):
+        adapter_ratings = self.data_ex_2
+        self.assertEqual(19208, get_num_arrangements(adapter_ratings))
