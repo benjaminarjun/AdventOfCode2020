@@ -3,8 +3,9 @@ from .results import get_joltage_diff_dist
 
 
 class TestAdapterLinkingFinder(unittest.TestCase):
-    def test_joltage_linking_ex_1(self):
-        adapter_ratings = [
+    @property
+    def data_ex_1(self):
+        return [
             16,
             10,
             15,
@@ -18,12 +19,9 @@ class TestAdapterLinkingFinder(unittest.TestCase):
             4,
         ]
 
-        expected = {1: 7, 2: 0, 3: 5}
-
-        self.assertEqual(expected, get_joltage_diff_dist(adapter_ratings))
-
-    def test_joltage_linking_ex_2(self):
-        adapter_ratings = [
+    @property
+    def data_ex_2(self):
+        return [
             28,
             33,
             18,
@@ -56,6 +54,16 @@ class TestAdapterLinkingFinder(unittest.TestCase):
             10,
             3,
         ]
+
+    def test_joltage_linking_ex_1(self):
+        adapter_ratings = self.data_ex_1
+
+        expected = {1: 7, 2: 0, 3: 5}
+
+        self.assertEqual(expected, get_joltage_diff_dist(adapter_ratings))
+
+    def test_joltage_linking_ex_2(self):
+        adapter_ratings = self.data_ex_2
 
         expected = {1: 22, 2: 0, 3: 10}
 
