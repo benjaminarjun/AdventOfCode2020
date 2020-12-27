@@ -21,10 +21,37 @@ class NavInstruction:
         return f'<NavInstruction(direction={self.direction}, magnitude={self.magnitude})>'
 
 
+class Position:
+    def __init__(self, x=None, y=None):
+        self.x = x or 0
+        self.y = y or 0
+
+    def move(self, instruction):
+        if instruction.direction == 'N':
+            self.y += instruction.magnitude
+        elif instruction.direction == 'S':
+            self.y -= instruction.magnitude
+        elif instruction.direction == 'E':
+            self.x += instruction.magnitude
+        elif instruction.direction == 'W':
+            self.x -= instruction.magnitude
+
+    def __eq__(self, other):
+        if not isinstance(other, type(self)):
+            return NotImplemented
+
+        return self.x == other.x and self.y == other.y
+
+    def __repr__(self):
+        return f'<Position(x={self.x}, y={self.y})>'
+
+
 class Ship:
-    def __init__(self):
-        self.position = [0, 0]
+    def __init__(self, wpt_nav=False):
+        self.position = Position()
+        self.waypoint = Position()
         self.direction = 'E'
+        self.wpt_nav = wpt_nav
 
         self._cardinal_order = ['N', 'E', 'S', 'W']
 
@@ -37,26 +64,29 @@ class Ship:
             self.navigate(instrs)
 
     def _navigate(self, instr):
-        if instr.direction == 'N':
-            self.position[1] += instr.magnitude
-        elif instr.direction == 'S':
-            self.position[1] -= instr.magnitude
-        elif instr.direction == 'E':
-            self.position[0] += instr.magnitude
-        elif instr.direction == 'W':
-            self.position[0] -= instr.magnitude
+        if instr.direction in ('N', 'S', 'E', 'W'):
+            self.waypoint.move(instr)
         elif instr.direction in ('L', 'R'):
-            num_turns = instr.magnitude // 90
-            index_offset = (instr.direction == 'L' and -1 or 1) * num_turns
+            if self.wpt_nav:
+                pass
+            else:
+                num_turns = instr.magnitude // 90
+                index_offset = (instr.direction == 'L' and -1 or 1) * num_turns
 
-            new_dir_index = (self._cardinal_order.index(self.direction) + index_offset) \
-                % (len(self._cardinal_order))
+                new_dir_index = (self._cardinal_order.index(self.direction) + index_offset) \
+                    % (len(self._cardinal_order))
 
-            self.direction = self._cardinal_order[new_dir_index]
+                self.direction = self._cardinal_order[new_dir_index]
         else:
             # 'F'
-            new_nav_instr = NavInstruction(self.direction, instr.magnitude)
-            self._navigate(new_nav_instr)
+            if self.wpt_nav:
+                pass
+            else:
+                new_nav_instr = NavInstruction(self.direction, instr.magnitude)
+                self._navigate(new_nav_instr)
+
+        if not self.wpt_nav:
+            self.position = self.waypoint
 
 
 if __name__ == '__main__':

@@ -1,5 +1,5 @@
 import unittest
-from .results import NavInstruction, Ship
+from .results import NavInstruction, Position, Ship
 
 
 class TestNavInstruction(unittest.TestCase):
@@ -9,6 +9,34 @@ class TestNavInstruction(unittest.TestCase):
 
         self.assertEqual('F', instr.direction)
         self.assertEqual(10, instr.magnitude)
+
+
+class TestPosition(unittest.TestCase):
+    def _get_position(self):
+        return Position(3, 5)
+
+    def test_init(self):
+        p = self._get_position()
+        self.assertEqual(Position(3, 5), p)
+
+    def test_init_default(self):
+        p = Position()
+        self.assertEqual(p.x, 0)
+        self.assertEqual(p.y, 0)
+
+    def test_move_sequence(self):
+        p = self._get_position()
+
+        instrs = [
+            NavInstruction('N', 3),
+            NavInstruction('W', 8),
+        ]
+
+        for instr in instrs:
+            p.move(instr)
+
+        self.assertEqual(Position(-5, 8), p)
+
 
 class TestShipNavigation(unittest.TestCase):
     def test_ship_navigation(self):
@@ -23,5 +51,5 @@ class TestShipNavigation(unittest.TestCase):
 
         ship.navigate(nav_instructions)
         
-        expected = [17, -8]
+        expected = Position(17, -8)
         self.assertEqual(expected, ship.position)
