@@ -36,6 +36,21 @@ class Position:
         elif instruction.direction == 'W':
             self.x -= instruction.magnitude
 
+    def copy(self):
+        return Position(self.x, self.y)
+
+    def __add__(self, other):
+        if not isinstance(other, type(self)):
+            return NotImplemented
+
+        return Position(self.x + other.x, self.y + other.y)
+
+    def __sub__(self, other):
+        if not isinstance(other, type(self)):
+            return NotImplemented
+
+        return Position(self.x - other.x, self.y - other.y)
+
     def __eq__(self, other):
         if not isinstance(other, type(self)):
             return NotImplemented
@@ -47,9 +62,9 @@ class Position:
 
 
 class Ship:
-    def __init__(self, wpt_nav=False):
+    def __init__(self, wpt_nav=False, init_wpt=None):
         self.position = Position()
-        self.waypoint = Position()
+        self.waypoint = init_wpt or Position()
         self.direction = 'E'
         self.wpt_nav = wpt_nav
 
@@ -67,10 +82,13 @@ class Ship:
         if instr.direction in ('N', 'S', 'E', 'W'):
             self.waypoint.move(instr)
         elif instr.direction in ('L', 'R'):
+            num_turns = instr.magnitude // 90
+
             if self.wpt_nav:
-                pass
+                cw = instr.direction == 'R'
+                for _ in range(num_turns):
+                    self._rotate_waypoint_about_ship(instr, cw=cw)
             else:
-                num_turns = instr.magnitude // 90
                 index_offset = (instr.direction == 'L' and -1 or 1) * num_turns
 
                 new_dir_index = (self._cardinal_order.index(self.direction) + index_offset) \
@@ -80,7 +98,10 @@ class Ship:
         else:
             # 'F'
             if self.wpt_nav:
-                pass
+                for _ in range(instr.magnitude):
+                    pos = self.position.copy()
+                    self.position += self.waypoint - pos
+                    self.waypoint += self.waypoint - pos
             else:
                 new_nav_instr = NavInstruction(self.direction, instr.magnitude)
                 self._navigate(new_nav_instr)
@@ -88,14 +109,28 @@ class Ship:
         if not self.wpt_nav:
             self.position = self.waypoint
 
+    def _rotate_waypoint_about_ship(self, instr, cw=True):
+        # get the position of waypoint relative to ship position
+        rel = self.waypoint - self.position
+
+        # rotate relative position
+        mult_factors = cw and (1, -1) or (-1, 1)
+        rot = Position(rel.y * mult_factors[0], rel.x * mult_factors[1])
+
+        self.waypoint = self.position + rot
+
 
 if __name__ == '__main__':
     data = get_data(12, entry_trans=NavInstruction.from_str)
     ship = Ship()
     ship.navigate(data)
 
-    manhattan_distance = abs(ship.position[0]) + abs(ship.position[1])
+    manhattan_distance = abs(ship.position.x) + abs(ship.position.y)
 
     print(f'Part 1:  {manhattan_distance}')
 
-    print(f'Part 2:  NOT IMPLEMENTED')
+    wpt_nav_ship = Ship(wpt_nav=True, init_wpt=Position(10, 1))
+    wpt_nav_ship.navigate(data)
+    wpt_manhattan_distance = abs(wpt_nav_ship.position.x) + abs(wpt_nav_ship.position.y)
+
+    print(f'Part 2:  {wpt_manhattan_distance}')

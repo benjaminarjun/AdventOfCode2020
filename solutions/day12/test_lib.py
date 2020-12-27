@@ -37,11 +37,17 @@ class TestPosition(unittest.TestCase):
 
         self.assertEqual(Position(-5, 8), p)
 
+    def test_position_addition(self):
+        p1 = Position(1, 2)
+        p2 = Position(3, 4)
+
+        self.assertEqual(Position(4, 6), p1 + p2)
+
 
 class TestShipNavigation(unittest.TestCase):
-    def test_ship_navigation(self):
-        ship = Ship()
-        nav_instructions = [NavInstruction.from_str(z) for z in (
+    @property
+    def nav_instructions(self):
+        return [NavInstruction.from_str(z) for z in (
             'F10',
             'N3',
             'F7',
@@ -49,7 +55,17 @@ class TestShipNavigation(unittest.TestCase):
             'F11',
         )]
 
-        ship.navigate(nav_instructions)
+    def test_ship_navigation(self):
+        ship = Ship()
+        ship.navigate(self.nav_instructions)
         
         expected = Position(17, -8)
+        self.assertEqual(expected, ship.position)
+
+    def test_ship_waypoint_navigation(self):
+        init_wpt = Position(10, 1)
+        ship = Ship(wpt_nav=True, init_wpt=init_wpt)
+        ship.navigate(self.nav_instructions)
+
+        expected = Position(214, -72)
         self.assertEqual(expected, ship.position)
